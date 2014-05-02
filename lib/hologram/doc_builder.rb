@@ -69,7 +69,7 @@ module Hologram
       end
 
       doc_parser = DocParser.new(input_directory, config['index'])
-      @pages, @categories = doc_parser.parse
+      @pages, @output_files_by_category = doc_parser.parse
 
       if config['index'] && !@pages.has_key?(config['index'] + '.html')
         DisplayMessage.warning("Could not generate index.html, there was no content generated for the category #{config['index']}.")
@@ -126,12 +126,16 @@ module Hologram
         DisplayMessage.warning("No _footer.html found in documentation assets. This might be okay to ignore...")
       end
 
-      tpl_vars = TemplateVariables.new({:categories => @categories})
+      tpl_vars = TemplateVariables.new({:output_files_by_category => @output_files_by_category})
       #generate html from markdown
-      @pages.each do |file_name, page|
+      @pages.each_with_index do |(file_name, page), index|
         fh = get_fh(output_directory, file_name)
 
-        title = page[:blocks].empty? ? "" : page[:blocks][0][:category]
+        if page[:blocks].empty?
+          title = ''
+        else
+          title, _ = @output_files_by_category.rassoc(file_name)
+        end
 
         tpl_vars.set_args({:title =>title, :file_name => file_name, :blocks => page[:blocks]})
 

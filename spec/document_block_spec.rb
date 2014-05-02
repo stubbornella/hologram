@@ -10,15 +10,16 @@ describe Hologram::DocumentBlock do
 
   context '#set_members' do
     it 'sets accessors for the the block config' do
-      config.each do |k, v|
-        expect(doc_block.send(k)).to eql v
-      end
+      expect(doc_block.send("name")).to eql "foo"
+      expect(doc_block.send("categories")).to eql ["bar"]
+      expect(doc_block.send("title")).to eql "baz"
+      expect(doc_block.send("parent")).to eql "pop"
     end
   end
 
   context '#get_hash' do
     let(:meta) do
-      { :name => 'foo', :category => 'bar', :title => 'baz', :parent => 'pop' }
+      { :name => 'foo', :categories => ['bar'], :title => 'baz', :parent => 'pop' }
     end
 
     it 'returns a hash of meta info' do
